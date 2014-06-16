@@ -6,9 +6,9 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{F44F1B5E-2622-4A7F-AB6E-B847EB58408E}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <StartupObject>K_Temp_Cleaner.Module1</StartupObject>
-    <RootNamespace>K_Temp_Cleaner</RootNamespace>
-    <AssemblyName>K-Temp-Cleaner</AssemblyName>
+    <StartupObject>K_Cleaner.Module1</StartupObject>
+    <RootNamespace>K_Cleaner</RootNamespace>
+    <AssemblyName>K-Cleaner</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MyType>Console</MyType>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
@@ -36,7 +36,7 @@
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
     <OutputPath>bin\Debug\</OutputPath>
-    <DocumentationFile>K-Temp-Cleaner.xml</DocumentationFile>
+    <DocumentationFile>K-Cleaner.xml</DocumentationFile>
     <NoWarn>
     </NoWarn>
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
@@ -48,7 +48,7 @@
     <DefineTrace>true</DefineTrace>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DocumentationFile>K-Temp-Cleaner.xml</DocumentationFile>
+    <DocumentationFile>K-Cleaner.xml</DocumentationFile>
     <NoWarn>
     </NoWarn>
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
