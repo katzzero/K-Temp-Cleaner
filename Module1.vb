@@ -3,7 +3,7 @@
 Module Module1
 
     Sub Main()
-        Console.WriteLine("..== For testing purpose only, made by T.O.Neves. thanks to Sergio Pastore ==..")
+        Console.WriteLine("..== For testing purpose only, by T.O.Neves. thanks to Sergio Pastore ==..")
         Console.WriteLine("Software made for specific needs, maybe not useful for everyone. Use with care.")
         Console.WriteLine("Lisenced under GPL 3.0 - search on GitHub for the source code.")
         Console.WriteLine("Please, send any bugs or opinions to thiagoneves@live.com")
@@ -18,17 +18,24 @@ Module Module1
         Dim _pt As Boolean = False
         Dim _temp As Boolean = False
         Dim _quiet As Boolean = False
+        Dim _clean As Boolean = False
         Dim tempath As String = System.IO.Path.GetTempPath
-        Dim filelist = System.IO.Directory.EnumerateFiles(tempath)
+        Dim _ptpath(2) As String
+        _ptpath(0) = "C:\Program File(x86)\Avid\Pro Tools\DAE\DAE Prefs"
+        _ptpath(1) = "C:\Program File(x86)\Avid\Pro Tools\Database"
+        _ptpath(2) = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+        'Console.WriteLine(_ptpath(2))
+        Dim _cleanpath As String = CStr(VariantType.String)
+        Dim filelisttemp As List(Of String)
         Dim filecount As Integer = 0
         Dim filesize As FileInfo
         Dim totalsize As Integer = 0
         Dim totalsize_ok As String = "Error Getting files size."
         Dim dirlist = System.IO.Directory.EnumerateDirectories(tempath)
         Dim dircount As Integer = 0
-        Dim FO As FileStream
         Dim _continue As String = CStr(VariantType.String)
-        filelist = GetFilesRecursive(tempath)
+        Dim _count As Integer = 0
+        'filelist = GetFilesRecursive(tempath)
 
         Console.WriteLine(" Parsing Arguments:")
         For Each arg In _args
@@ -49,34 +56,52 @@ Module Module1
             End If
             If arg.Contains("-pt") Then
                 _pt = True
+                Console.WriteLine(" Pro Tools config folders will be cleaned.")
+                Console.WriteLine(_ptpath(0))
+                Console.WriteLine(_ptpath(1))
+                Console.WriteLine(_ptpath(2))
             End If
             If arg = "-tmp" Then
                 _temp = True
+                Console.WriteLine(" User's default Temporary folder will be cleaned.")
+                Console.WriteLine(tempath)
             End If
-        Next
-        
+            If arg = "-c" Then
+                _clean = True
+                _cleanpath = _args(_count + 1)
+                If System.IO.Directory.Exists(_cleanpath) = True Then
+                    Console.WriteLine(" ## Careful ##")
+                    Console.WriteLine(" Any file on " & _cleanpath & " will be Deleted !!!")
+                    Console.WriteLine()
+                    Console.WriteLine(" Do you REALLY want to continue? Yes/No")
 
-        If _quiet = True Then
-            Console.Write(" -q [quiet],")
-        End If
-        If _yes4all = True Then
-            Console.Write(" -y [assume yes],")
-        End If
-        If _dir2 = True Then
-            Console.Write(" -f [include folders],")
-        End If
-        If _help = True Then
-            Console.Write(" -h [help],")
-        End If
-        If _info = True Then
-            Console.Write(" -i [info],")
-        End If
-        If _pt = True Then
-            Console.Write(" -pt [Pro-Tools],")
-        End If
-        If _temp = True Then
-            Console.Write(" -tmp [Temporary].")
-        End If
+                    Do Until _continue = "Yes"
+                        _continue = Console.ReadLine()
+                        If _continue = "Yes" Then
+                            Console.WriteLine(" Starting the cleanup.")
+                        ElseIf _continue = "No" Then
+                            Console.WriteLine(" Stoping right now.")
+                            Environment.Exit(0)
+                        Else
+                            Console.WriteLine(" You need to type Yes or No")
+                        End If
+                    Loop
+                    Console.WriteLine(" The user selected folder will be cleaned.")
+                    Console.WriteLine(_cleanpath)
+                Else
+                    Console.WriteLine(" Specified folder not found!")
+                    _cleanpath = ""
+                    _clean = False
+                End If
+
+            End If
+            _count = _count + 1
+        Next
+        Console.Read()
+        Environment.Exit(0)
+
+        
+       
         Console.WriteLine()
         Console.WriteLine(" Finished parsing arguments.")
         Console.WriteLine(" Starting processes...")
@@ -85,7 +110,7 @@ Module Module1
 
         If _help = True Then
             Console.WriteLine()
-            Console.WriteLine(" Usage: <k-cleaner.exe> -<arg1> -<arg2> ... -<argN>")
+            Console.WriteLine(" Usage: <k-cleaner.exe> -<arg1> -<arg2> -<c> <""absolute path""> ... -<argN>")
             Console.WriteLine()
             Console.WriteLine(" -y = Presume yes for all questions.")
             Console.WriteLine()
@@ -99,11 +124,13 @@ Module Module1
             Console.WriteLine()
             Console.WriteLine(" -pt = Clean the following Pro Tools files:")
             Console.WriteLine()
-            Console.WriteLine("       C:\Program File(x86)\Avid\Pro Tools\DAE\DAE Pref")
+            Console.WriteLine("       C:\Program File(x86)\Avid\Pro Tools\DAE\DAE Prefs")
             Console.WriteLine("       C:\Program File(x86)\Avid\Pro Tools\Database [keeping this folder]")
-            Console.WriteLine("       C:\Users\-=current user=-\AppData\Roaming\DAE\Pro Tools.pref")
+            Console.WriteLine("       C:\Users\-=current user=-\AppData\Roaming\...\Pro Tools.pref")
             Console.WriteLine()
             Console.WriteLine(" -tmp = Clean user Temporary folder.")
+            Console.WriteLine()
+            Console.WriteLine(" -c = Clean user specified folder.")
             Console.WriteLine()
             Console.WriteLine()
             Console.WriteLine(" Press any key to Exit.")
@@ -111,17 +138,6 @@ Module Module1
             Environment.[Exit](0)
         End If
 
-        If _quiet = False Then
-            If _temp = True Then
-                Console.WriteLine(" User's default Temporary folder will be cleaned right now.")
-                Console.WriteLine(tempath)
-            End If
-            If _pt = True Then
-                Console.WriteLine(" The default Temporary folder will be cleaned right now.")
-                Console.WriteLine(tempath)
-            End If
-
-        End If
         If _yes4all = False Then
             Console.WriteLine(" You want to continue? yes/no")
 
@@ -137,13 +153,15 @@ Module Module1
                 End If
             Loop
         Else
-
             If _quiet = False Then
                 Console.WriteLine(" Starting the cleanup.")
             End If
 
         End If
 
+    End Sub
+
+    Public Function get_count(ByVal path As String,ByVal Optional _dir As Boolean, ByVal _ ) As List(Of String)
 
         Try
             For Each _dir In dirlist
@@ -153,6 +171,10 @@ Module Module1
         Catch ex As Exception
             Console.WriteLine(" Error gathering the list of directories.")
         End Try
+        filelisttemp = GetFilesRecursive(tempath)
+        For Each path In _ptpath
+            filelistpt.add = GetFilesRecursive(path)
+        Next
 
 
         Try
@@ -172,8 +194,38 @@ Module Module1
         If _info = True Then
             Environment.Exit(0)
         End If
+        If _dir = True Then
+
+        End If
+
+    End Function
+
+    Public Function del_folder(ByVal _path As String, ByVal _quiet As Boolean) As Boolean
         Try
-            For Each temps In filelist
+
+            For Each _dirs In _path
+                Try
+                    Directory.Delete(_dirs)
+                Catch ex As Exception
+                    If _quiet = False Then
+                        Console.WriteLine(" error deleting temporary folders.")
+                    End If
+                End Try
+
+            Next
+
+            Return True
+        Catch ex As Exception
+            Return False
+        End Try
+
+    End Function
+
+    Public Function clean_folder(ByVal _folder As IEnumerable(Of String), ByVal _quiet As Boolean) As Boolean
+
+        Dim FO As FileStream
+        Try
+            For Each temps In _folder
                 Try
                     FO = System.IO.File.Open(temps, FileMode.Open, FileAccess.Read, FileShare.None)
                     FO.Close()
@@ -189,31 +241,17 @@ Module Module1
                 End Try
 
             Next
+            Return True
         Catch ex As Exception
             If _quiet = False Then
                 Console.WriteLine(" error acessing temp files.")
                 'Console.Read()
             End If
-        End Try
-        Try
-            If _dir2 = True Then
-                For Each _dirs In dirlist
-                    Try
-                        Directory.Delete(_dirs)
-                    Catch ex As Exception
-                        If _quiet = False Then
-                            Console.WriteLine(" error deleting temporary folders.")
-                        End If
-                    End Try
-
-                Next
-
-            End If
-        Catch ex As Exception
-
+            Return False
         End Try
 
-    End Sub
+    End Function
+
 
     Public Function GetFilesRecursive(ByVal initial As String) As List(Of String)
         ' This list stores the results.
